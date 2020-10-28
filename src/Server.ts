@@ -1,4 +1,7 @@
 import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import  { notFoundHandler, errorHandler} from './libs/routes';
+
 class Server {
     app;
     constructor(private config) {
@@ -7,19 +10,31 @@ class Server {
     }
 
     bootstrap() {
+        this.initBodyParsar();
         this.setupRoutes();
         return this;
     }
 
-    setupRoutes() {
+      setupRoutes() {
         const { app } = this;
         app.get('/health-check', (req, res, next) => {
             res.send('I am Ok');
         });
+
+        app.use(notFoundHandler);
+        
+        app.use(errorHandler);
         return this;
-    }
-    run () {
-        const { app , config : {PORT }} = this;
+        }
+         
+        initBodyParsar(){
+            const { app } = this;
+            app.use(bodyParser.json({ type: 'application/*+json'}));
+
+        }
+
+          run () {
+        const { app , config : { PORT }} = this;
         app.listen(PORT, (err) => {
             if (err) {
             console.log(err);
@@ -29,6 +44,6 @@ class Server {
 
     }
 
-
 }
+
 export default Server;
