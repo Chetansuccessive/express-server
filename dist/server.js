@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const bodyParser = require("body-parser");
 const routes_1 = require("./libs/routes");
+const router_1 = require("./router");
 class Server {
     constructor(config) {
         this.config = config;
@@ -18,6 +19,7 @@ class Server {
         app.get('/health-check', (req, res, next) => {
             res.send('I am Ok');
         });
+        app.use('/api', router_1.default);
         app.use(routes_1.notFoundHandler);
         app.use(routes_1.errorHandler);
         return this;
