@@ -1,8 +1,9 @@
 import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import  { notFoundHandler, errorHandler} from './libs/routes';
+import * as bodyparser from 'body-parser';
+import { notFoundHandler, errorHandler } from './libs/routes';
 import mainRouter from './router';
 import Database from './libs/Database';
+import { isConditionalExpression } from 'typescript';
 
 class Server {
     app;
@@ -10,41 +11,30 @@ class Server {
         this.app = express();
 
     }
+    public initBodyParser() {
+        this.app.use(bodyparser.json());
+    }
 
     bootstrap() {
-        this.initBodyParsar();
+        this.initBodyParser();
         this.setupRoutes();
         return this;
     }
 
-      setupRoutes() {
-        const { app } = this;
-        app.get('/health-check', (req, res, next) => {
+    public setupRoutes() {
+        this.app.use('/health-check', (req, res, next) => {
             res.send('I am Ok');
+            next();
         });
-
-        app.use ('/api', mainRouter);
-
-         app.use(notFoundHandler);
-        
-        app.use(errorHandler);
+        this.app.use('/api', mainRouter);
+        this.app.use(notFoundHandler);
+        this.app.use(errorHandler);
         return this;
-        }
-         
-        initBodyParsar(){
-            const { app } = this;
-            app.use(bodyParser.json({ type: 'application/*+json'}));
-
-        }
-
-        run() {
-            const { app, config: { PORT } } = this;
-            Database.open('mongodb://localhost:27017/express-training', (err) => {
-                if (err){
-                    console.log(err);
-                    return;
-                }
-    
+    }
+    run() {
+        const { app, config: { PORT } } = this;
+        Database.open('mongodb://localhost:27017/express-training')
+            .then((res) => {
                 console.log('Successfully connected to Mongo');
                 app.listen(PORT, (err) => {
                     if (err) {
@@ -52,10 +42,10 @@ class Server {
                     }
                     console.log(`App is running on port ${PORT}`);
                 });
-        });
 
+            })
+            .catch(err => console.log(err));
     }
 
 }
-
 export default Server;
