@@ -83,4 +83,4 @@ function isNull( obj: any ) {
     const a = ( obj === 'undefined' || obj === null );
     // console.log('result' , a);
     return a;
-  }
+  } 
