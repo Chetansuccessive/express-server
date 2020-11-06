@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as bodyparser from 'body-parser';
 import { notFoundHandler, errorHandler } from './libs/routes';
 import mainRouter from './router';
-import Database from './libs/Database';
+import { Database } from './libs';
 import { isConditionalExpression } from 'typescript';
 
 class Server {
