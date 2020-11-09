@@ -12,7 +12,7 @@ export default ( config ) => ( req: Request, res: Response, next: NextFunction  
         const obj = config[key];
         console.log('key is' , key);
         const values = obj.in.map( ( val ) => {
-            // console.log( 'val',val ); 
+            // console.log( 'val',val );
             // console.log( 'key', key );
             return req[ val ][ key ];
         });

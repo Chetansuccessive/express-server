@@ -1,5 +1,4 @@
 node_modules
-package-lock.json
 extra
 extraTs
 12Factor-APP.md
