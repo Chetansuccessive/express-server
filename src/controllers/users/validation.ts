@@ -1,3 +1,4 @@
+
 const config = {
     get: {
         skip: {
@@ -20,8 +21,7 @@ const config = {
             required: true,
             string: true,
             in: ['body'],
-            custom: (Value) => {
-                console.log(`Value ${Value}`);
+            custom: () => {
                 throw { error: 'Error Occured', message: 'Message' };
             }
         },
@@ -32,7 +32,7 @@ const config = {
             errorMessage: 'Name is required'
         }
     },
-    delete: {
+    Delete: {
         id: {
             required: true,
             errorMessage: 'Id is required',
@@ -49,6 +49,18 @@ const config = {
             in: ['body'],
             required: true,
             isObject: true,
+        }
+    },
+    login: {
+        email: {
+            required: true,
+            string: true,
+            in: ['body']
+        },
+        password: {
+            required: true,
+            string: true,
+            in: ['body']
         }
     }
 };

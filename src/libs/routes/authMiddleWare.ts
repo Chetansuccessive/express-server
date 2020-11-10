@@ -1,28 +1,31 @@
 import * as jwt from 'jsonwebtoken';
-import hasPermission from './Permissions';
-export default (module,permissionType)=> (req,res,next)=> {
-    try{
-        console.log("The config is ",module,permissionType);
 
-    console.log("Header is ",req.headers['authorization'])
-    const token = req.headers['authorization']
-    const decodedUser = jwt.verify(token,'qwertyuiopasdfghjklzxcvbnm123456')
-        console.log('User',decodedUser);
-        const result =hasPermission(module,decodedUser.role,permissionType);
-        if(result)
-            next(); 
-        else{
+import hasPermissions from './Permissions';
+import IRequest from '../../IRequest';
+import{ Response, NextFunction } from 'express';
+
+export default (module: any, permissinType: string) => (req: IRequest, res: Response, next: NextFunction) => {
+    try {
+        console.log('the config is:-', module, permissinType);
+        const token = req.headers.authorization;
+        console.log('Header is:-', token);
+        const decodeUser = jwt.verify(token, 'qwertyuiopasdfghjklzxcvbnm123456');
+        console.log('User', decodeUser.result);
+        req.userData = decodeUser.result;
+        console.log(decodeUser.result.role);
+        const result = hasPermissions(module, decodeUser.result.role, permissinType);
+        if (result === true)
+            next();
+        else {
             next({
-                error:"Unauthorized",
-                code: 403
-            })
+                error: 'Unauthorized Access',
+                message: 403
+            });
         }
-    } catch(err){
+    } catch (err) {
         next({
-            error:"Unauthorized",
-            code: 403
-        })
+            error: 'Unauthorized Access',
+            message: 403
+        });
     }
-    
-    
-}
+};
