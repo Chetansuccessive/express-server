@@ -1,8 +1,5 @@
 node_modules
-<<<<<<< HEAD
 package-lock.json
 extra
 extraTs
-=======
->>>>>>> bfb861569aea10ee0dbd384aede4726d950e9c9f
 dist
