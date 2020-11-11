@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import  { notFoundHandler, errorHandler } from './libs/routes';
 import mainRouter from './router';
+import Database from './libs/Database';
 
 class Server {
     app;
@@ -36,13 +37,21 @@ class Server {
 
         }
 
-          run () {
-        const { app , config : { PORT }} = this;
-        app.listen(PORT, (err) => {
-            if (err) {
-            console.log(err);
-            }
-            console.log(`App is running ${PORT}`);
+        run() {
+            const { app, config: { PORT } } = this;
+            Database.open('mongodb://localhost:27017/express-training', (err) => {
+                if (err){
+                    console.log(err);
+                    return;
+                }
+    
+                console.log('Successfully connected to Mongo');
+                app.listen(PORT, (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(`App is running on port ${PORT}`);
+                });
         });
 
     }
