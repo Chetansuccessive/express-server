@@ -10,6 +10,6 @@ traineeRouter.route('/')
     .get(validationHandler(validation.get),traineeController.get)
     .post(traineeController.create)
     .put(traineeController.update)
-    .delete(traineeController.delete);
+    .delete(traineeController.Delete);
 
 export default traineeRouter;
