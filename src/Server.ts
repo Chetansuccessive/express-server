@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import  { notFoundHandler, errorHandler} from './libs/routes';
+import  { notFoundHandler, errorHandler } from './libs/routes';
 import mainRouter from './router';
 import Database from './libs/Database';
 
@@ -26,12 +26,12 @@ class Server {
         app.use ('/api', mainRouter);
 
          app.use(notFoundHandler);
-        
+
         app.use(errorHandler);
         return this;
         }
-         
-        initBodyParsar(){
+
+        initBodyParsar() {
             const { app } = this;
             app.use(bodyParser.json({ type: 'application/*+json'}));
 
