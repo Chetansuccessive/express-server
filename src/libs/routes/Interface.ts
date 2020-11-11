@@ -1,8 +1,8 @@
-interface  IUsers{
+interface  IUsers {
 
 
-    traineeEmail:String;
-    reviewerEmail:String ; 
+    traineeEmail: 'String';
+    reviewerEmail: 'String' ;
 
 }
 
@@ -11,16 +11,16 @@ interface  IUsers{
 
 
 type access = {
-    all: String[];
-    read:String[];
-    write:String[];
-    Delete:String[];
-}
+    all: 'String'[];
+    read: 'String'[];
+    write: 'String'[];
+    Delete: 'String'[];
+};
 
 
 interface IPermissions {
-    getUsers : access;
+    getUsers: access;
     getDetails: access;
-};
+}
 
-export {IUsers,IPermissions} 
+export { IUsers, IPermissions };

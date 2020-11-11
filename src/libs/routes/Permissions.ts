@@ -1,24 +1,24 @@
 
-export default function hasPermission(moduleName ,role,permissionType){
+export default function hasPermission(moduleName , role, permissionType) {
 
-    const {all,read,write,Delete={}} = moduleName;
+    const {all, read, write, Delete= {}} = moduleName;
 
     let f = all.includes(role);
 
-    if(f==true){
+    if (f === true) {
         return true;
     }
-    else{
-        if(permissionType== "read"){
-            f =read.includes(role);
+    else {
+        if (permissionType === 'read') {
+            f = read.includes(role);
             return f;
-        }else if (permissionType == "write"){
+        } else if (permissionType === 'write') {
             f = write.includes(role);
             return f;
-        }else if (permissionType == "Delete"){
-            f =Delete.includes(role);
+        } else if (permissionType === 'Delete') {
+            f = Delete.includes(role);
             return f;
         }
     }
 
- } 
+ }
