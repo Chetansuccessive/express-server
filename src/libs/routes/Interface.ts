@@ -1,8 +1,8 @@
 interface  IUsers {
 
 
-    traineeEmail: 'String';
-    reviewerEmail: 'String' ;
+    traineeEmail: string;
+    reviewerEmail: string;
 
 }
 
@@ -11,10 +11,10 @@ interface  IUsers {
 
 
 type access = {
-    all: 'String'[];
-    read: 'String'[];
-    write: 'String'[];
-    Delete: 'String'[];
+    all: string[];
+    read: string[];
+    write: string[];
+    Delete: string[];
 };
 
 
