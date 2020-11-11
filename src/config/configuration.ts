@@ -1,8 +1,7 @@
 import * as dotenv from 'dotenv';
 
 console.log ('Inside config' );
-console.log(dotenv)
+console.log(dotenv) ;
 // const envVars= dotenv()
-const config ={}
-
+const config = {} ;
 export default config;
