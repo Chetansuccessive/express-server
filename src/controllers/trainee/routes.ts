@@ -44,8 +44,9 @@ export {getUsers,getDetails,users}
 const traineeRouter = Router();
 
 traineeRouter.route('/')
-.get(traineeController.get)
-.post(traineeController.create)
-.put(traineeController.update)
-.delete(traineeController.Delete);
-export default traineeRouter; 
+    .get(validationHandler(validation.get),traineeController.get)
+    .post(traineeController.create)
+    .put(traineeController.update)
+    .delete(traineeController.Delete);
+
+export default traineeRouter;
