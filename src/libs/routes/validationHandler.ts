@@ -1,17 +1,25 @@
 import { NextFunction, Request, Response } from 'express';
+const checkValidation = ( errors, obj, values, key ) => {
 
 export default (config) => (req: Request, res: Response, next: NextFunction) => {
     const errors = [];
     console.log('Inside ValidationHandler Middleware');
-    console.log(req.body);
-    console.log(req.query);
-    console.log(Object.keys(req.query).length);
-    const keys = Object.keys(config);
+    console.log('Body: ', req.body, 'Query: ', req.query, 'Params: ', req.params);
+    const keys = Object.keys(config);  // {'skip','limit'}
     keys.forEach((key) => {
-        const obj = config[key];
-        console.log('key is', key);
-        const values = obj.in.map((val) => {
-            return req[val][key];
+        const obj = config[key];     // {' skip: { } ','limit':{ } }
+        const values = {} ;
+        let isValueAvail = false;
+        obj.in.forEach((val) => {
+          values[val] = req[val][key];
+          if (req[val][key]) {
+            isValueAvail = true;  // check for values
+        }
+        if (!obj.required && obj.default) {
+
+          req[val][key] = req[val][key] || obj.default;
+          values[val] = req[val][key];
+         }
         });
         if (Object.keys(req[obj.in]).length === 0) {
             errors.push({
@@ -26,7 +34,7 @@ export default (config) => (req: Request, res: Response, next: NextFunction) => 
                 errors.push({
                     key: { key },
                     location: obj.in,
-                    message: obj.errorMessage || `${key} is required`,
+                    message: `${key} is required`,
                 });
             }
         }
@@ -82,8 +90,14 @@ export default (config) => (req: Request, res: Response, next: NextFunction) => 
 };
 
 
+          }
+        }
+    );
 
-function isNull(obj) {
-    const a = (obj === undefined || obj === null);
-    return a;
-}
+    if (errors.length > 0) {
+              res.status(400).json({ errors });
+          }
+          else {
+              next();
+          }
+      };
