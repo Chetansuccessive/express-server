@@ -1,5 +1,5 @@
-import  * as mongoose from 'mongoose';
-import {userModel} from './UserModel';
+import * as mongoose from 'mongoose';
+import { userModel } from './UserModel';
 import IUserModel from './IUserModel';
 
 export default class UserRepository {
@@ -12,8 +12,8 @@ export default class UserRepository {
         return userModel.findOne(query).lean();
     }
 
-    public find(query, projection ?: any, options?: any): any {
-        return userModel.find(query, projection, options)
+    public find(query, projection?: any, options?: any): any {
+        return userModel.find(query, projection, options);
     }
 
     public create(data: any): Promise<IUserModel> {
@@ -25,12 +25,5 @@ export default class UserRepository {
         });
         return model.save();
     }
-
-   // public update(data: any): Promise<IUserModel> {
-
-   // }
-   public count(){
-       return userModel.countDocuments();
-   }
 }
 

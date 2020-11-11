@@ -1,56 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 const checkValidation = ( errors, obj, values, key ) => {
 
-  if (obj.number) {
-    const isNumber = Object.keys(values).some(valKey => {
-        return Number.isInteger(parseInt(values[valKey], 10));
-    });
-    if (!isNumber) {
-        errors.push( {
-            key,
-            location: obj.in,
-            message: obj.errorMessage || `${key} is invalid.`,
-        } );
-    }
-}
-
-
-// Checking for regex
-if (obj.regex) {
-const regex = obj.regex;
-if (!regex.test(values)) {
-    errors.push({
-        key,
-        location: obj.in,
-        message: obj.errorMessage || `${key} is not valid expression`,
-    });
-}
-}
-
-//   Checking for object
-if (obj.isObject) {
-if (!(typeof (values) === 'object')) {
-    errors.push({
-        key,
-        location: obj.in,
-        message: obj.errorMessage || `${key} Should be an object`,
-    });
-}
-}
-
-// Checking for string
-if (obj.string) {
-if (!(typeof (values) === 'string')) {
-
-errors.push({
-        key,
-        location: obj.in,
-        message: obj.errorMessage || `${key} Should be a String`,
-    });
-}
-}
-};
-
 export default (config) => (req: Request, res: Response, next: NextFunction) => {
     const errors = [];
     console.log('Inside ValidationHandler Middleware');
@@ -71,23 +21,74 @@ export default (config) => (req: Request, res: Response, next: NextFunction) => 
           values[val] = req[val][key];
          }
         });
-      // console.log('......values......', Object.values(values));     //   {query={2},values={}}
-        console.log('......values......',  Object.values(values)[0]);     //   {query={2},values={}}
-
+        if (Object.keys(req[obj.in]).length === 0) {
+            errors.push({
+                key: { key },
+                location: obj.in,
+                message: obj.errorMessage || `Values should be passed through ${obj.in}`,
+            });
+        }
+        console.log('values is', values);
         if (obj.required) {
-          if (!isValueAvail) {
-              errors.push({
-                    key,
+            if (isNull(values[0])) {
+                errors.push({
+                    key: { key },
                     location: obj.in,
                     message: `${key} is required`,
                 });
-
-            } else {
-                      checkValidation(errors, obj, Object.values(values)[0], key);
             }
-          }
-          else {
-            checkValidation(errors, obj, values, key);
+        }
+        if (obj.string) {
+            if (!(typeof (values[0]) === 'string')) {
+                errors.push({
+                    key: { key },
+                    location: obj.in,
+                    message: obj.errorMessage || `${key} Should be a String`,
+                });
+            }
+        }
+        if (obj.isObject) {
+            if (!(typeof (values) === 'object')) {
+                errors.push({
+                    key: { key },
+                    location: obj.in,
+                    message: obj.errorMessage || `${key} Should be an object`,
+                });
+            }
+        }
+        if (obj.regex) {
+            const regex = obj.regex;
+            if (!regex.test(values[0])) {
+                errors.push({
+                    key: { key },
+                    location: obj.in,
+                    message: obj.errorMessage || `${key} is not valid expression`,
+                });
+            }
+        }
+        if (obj.default) {
+            if (isNull(values[0])) {
+                // values[0] === obj.default;
+            }
+        }
+        if (obj.number) {
+            if (isNaN(values[0]) || values[0] === undefined) {
+                errors.push({
+                    key: { key },
+                    location: obj.in,
+                    message: obj.errorMessage || `${key}  must be an number`,
+                });
+            }
+        }
+    });
+    if (errors.length > 0) {
+        res.status(400).send({ errors });
+    }
+    else {
+        next();
+    }
+};
+
 
           }
         }

@@ -1,7 +1,10 @@
 node_modules
+package-lock.json
+dist
 extra
 extraTs
 12Factor-APP.md
 MERN-STACK.md
 dist
 VS-CODE.md
+package-lock.json
