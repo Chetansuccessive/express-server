@@ -1,7 +1,13 @@
-export interface IUser {
+interface  IUsers {
+
     traineeEmail: string;
-    reviewerEmail: string;
+    reviewerEmail: string ;
+
 }
+
+
+
+
 
 type access = {
     all: string[];
@@ -10,7 +16,10 @@ type access = {
     Delete: string[];
 };
 
-export interface  IPermission {
-    getUsers: access ;
-    getUser: access;
+
+interface IPermissions {
+    getUsers: access;
+    getDetails: access;
 }
+
+export { IUsers, IPermissions };

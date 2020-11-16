@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { userModel } from '../../repositories/user/UserModel';
+import UserRepository from '../../repositories/user/UserRepository';
 import * as jwt from 'jsonwebtoken';
 import IRequest from '../../IRequest';
 class UserController {
@@ -127,4 +128,4 @@ class UserController {
     }
 }
 
-export default UserController.getInstance();
+export default new UserController();

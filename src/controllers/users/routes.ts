@@ -18,4 +18,5 @@ UserRouter.route('/me')
 UserRouter.route('/login')
 .post( validationHandler ( config.login ) , UserController.login );
 
+
 export default UserRouter;
