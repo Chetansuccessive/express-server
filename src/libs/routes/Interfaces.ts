@@ -1,25 +1,15 @@
-interface  IUsers {
 
+export interface IUser {
     traineeEmail: string;
-    reviewerEmail: string ;
-
-}
-
-
-
-
-
-type access = {
+    reviewerEmail: string;
+    }
+    type access = {
     all: string[];
     read: string[];
     write: string[];
     Delete: string[];
-};
-
-
-interface IPermissions {
-    getUsers: access;
-    getDetails: access;
-}
-
-export { IUsers, IPermissions };
+    };
+    export interface IPermission {
+    getUsers: access ;
+    getUser: access;
+    }

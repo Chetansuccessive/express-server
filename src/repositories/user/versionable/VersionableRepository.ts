@@ -42,10 +42,11 @@ export default class VersionableRepository<D extends mongoose.Document, M extend
     public async update(id: string, dataToUpdate: any, updator) {
 
         let originalData;
+        // tslint:disable-next-line: no-null-keyword
         await this.findOne({ _id: id, updatedAt: null, deletedAt: null })
             .then((data) => {
                 if (data === null) {
-                    throw '';
+                    throw undefined;
                 }
                 originalData = data;
                 const newId = VersionableRepository.generateObjectId();
@@ -66,7 +67,7 @@ export default class VersionableRepository<D extends mongoose.Document, M extend
                 this.model.updateOne({ _id: oldId }, oldModel)
                     .then((res) => {
                         if (res === null) {
-                            throw '';
+                            throw undefined;
                         }
                     });
 
@@ -80,10 +81,11 @@ export default class VersionableRepository<D extends mongoose.Document, M extend
 
         let originalData;
 
+        // tslint:disable-next-line: no-null-keyword
         await this.findOne({ _id: id, deletedAt: null })
             .then((data) => {
                 if (data === null) {
-                    throw '';
+                    throw undefined;
                 }
 
                 originalData = data;
@@ -98,10 +100,10 @@ export default class VersionableRepository<D extends mongoose.Document, M extend
                 this.model.updateOne({ _id: oldId }, modelDelete)
                     .then((res) => {
                         if (res === null) {
-                            throw '';
+                            throw undefined;
                         }
                     });
 
             });
     }
-} 
+}

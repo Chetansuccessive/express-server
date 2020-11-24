@@ -10,10 +10,10 @@ export default (module: any, permissinType: string) => (req: IRequest, res: Resp
         const token = req.headers.authorization;
         console.log('Header is:-', token);
         const decodeUser = jwt.verify(token, 'qwertyuiopasdfghjklzxcvbnm123456');
-        console.log('User', decodeUser.result);
-        req.userData = decodeUser.result;
-        console.log(decodeUser.result.role);
-        const result = hasPermissions(module, decodeUser.result.role, permissinType);
+        console.log('User', decodeUser);
+        req.userData = decodeUser;
+        console.log(decodeUser.role);
+        const result = hasPermissions(module, decodeUser.role, permissinType);
         if (result === true)
             next();
         else {

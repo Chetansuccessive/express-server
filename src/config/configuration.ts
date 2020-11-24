@@ -1,12 +1,8 @@
 import * as dotenv from 'dotenv';
+import { IConfig } from './IConfig';
 
-console.log('Inside config');
-console.log(dotenv);
-const envVars: NodeJS.ProcessEnv = process.env;
-const config = {
-    env: envVars.NODE_ENV,
-    mongo: envVars.MONGO_URL,
-};
-Object.freeze(config);
+const enVars = dotenv.config();
+const config = enVars.parsed;
 
 export default config;
+Object.freeze(config);
