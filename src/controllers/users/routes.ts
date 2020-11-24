@@ -14,4 +14,7 @@ UserRouter.route('/me')
 .get(authMiddleWare ( permissions.getUsers, 'all' ), UserController.get);
 UserRouter.route('/login')
 .post( validationHandler ( config.login ), UserController.login );
+UserRouter.get('/getall', authMiddleWare('getUsers', 'all'), validationHandler(config.get),
+UserController.getAll);
+
 export default UserRouter;

@@ -59,6 +59,12 @@ const config = {
             number: true,
             in: ['query'],
             errorMessage: 'Limit is invalid'
+        },
+        sort: {
+            required: false,
+            boolean: true,
+            in: ['query'],
+            errorMessage: 'Sort is invalid',
         }
     },
     update: {
@@ -87,6 +93,6 @@ const config = {
             in: ['body'],
             errorMessage: 'Password is required'
         },
-      }
-  };
-  export default config;
+    }
+};
+export default config;
