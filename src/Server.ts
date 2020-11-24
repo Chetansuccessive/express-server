@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import { notFoundHandler, errorHandler } from './libs/routes';
+import { notFoundRoute, errorHandler } from './libs/routes';
 import routes from './router';
 import Database from './libs/Database';
 
@@ -26,7 +26,7 @@ class Server {
 
         });
         this.app.use('/api', routes);
-        this.app.use(notFoundHandler);
+        this.app.use(notFoundRoute);
         this.app.use(errorHandler);
 
     }
