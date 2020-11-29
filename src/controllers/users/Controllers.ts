@@ -118,7 +118,7 @@ class UserController {
                     if (err) { throw (err); }
                     if (result) {
                         const token = jwt.sign(userData.toJSON(), config.KEY, {
-                            expiresIn: '1m',
+                            expiresIn: '15m',
                         });
                         console.log(token);
                         res.send({
