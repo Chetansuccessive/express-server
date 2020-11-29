@@ -33,4 +33,7 @@ export default class UserRepository extends VersionableRepository<IUserModel, mo
   public counData() {
     return super.count();
   }
+  public getallTrainee(skip, limit, sort) {
+    return super.getallTrainee(skip, limit, sort);
+}
 }
