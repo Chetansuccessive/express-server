@@ -1,58 +1,54 @@
 import { NextFunction, Request, Response } from 'express';
-const checkValidation = ( errors, obj, values, key ) => {
+// import { isNullOrUndefined } from 'util';
 
-export default (config) => (req: Request, res: Response, next: NextFunction) => {
+export default ( config ) => ( req: Request, res: Response, next: NextFunction  ) => {
     const errors = [];
-    console.log('Inside ValidationHandler Middleware');
-    console.log('Body: ', req.body, 'Query: ', req.query, 'Params: ', req.params);
-    const keys = Object.keys(config);  // {'skip','limit'}
+    console.log( 'Inside ValidationHandler Middleware' );
+    console.log( req.body );
+    console.log( req.query );
+    console.log(Object.keys( req.query ).length );
+    const keys = Object.keys( config );
     keys.forEach((key) => {
-        const obj = config[key];     // {' skip: { } ','limit':{ } }
-        const values = {} ;
-        let isValueAvail = false;
-        obj.in.forEach((val) => {
-          values[val] = req[val][key];
-          if (req[val][key]) {
-            isValueAvail = true;  // check for values
-        }
-        if (!obj.required && obj.default) {
-
-          req[val][key] = req[val][key] || obj.default;
-          values[val] = req[val][key];
-         }
+        const obj = config[key];
+        console.log('key is' , key);
+        const values = obj.in.map( ( val ) => {
+            // console.log( 'val',val );
+            // console.log( 'key', key );
+            return req[ val ][ key ];
         });
-        if (Object.keys(req[obj.in]).length === 0) {
+
+        // Checking for In i.e Body or Query
+        if (isNull(req[obj.in])) {
             errors.push({
-                key: { key },
-                location: obj.in,
-                message: obj.errorMessage || `Values should be passed through ${obj.in}`,
+                message: `Values should be passed through ${obj.in}`,
+                status: 400
             });
         }
-        console.log('values is', values);
+
+        // Checking for required
+        console.log('values is' , values);
+        // console.log( 'values exist' , isNull( values ) );
         if (obj.required) {
-            if (isNull(values[0])) {
+            if (isNull(values)) {
                 errors.push({
-                    key: { key },
-                    location: obj.in,
                     message: `${key} is required`,
+                    status: 404
                 });
             }
         }
         if (obj.string) {
-            if (!(typeof (values[0]) === 'string')) {
+            if ( ! ( typeof ( values ) === 'string' ) ) {
                 errors.push({
-                    key: { key },
-                    location: obj.in,
-                    message: obj.errorMessage || `${key} Should be a String`,
+                    message: `${key} Should be a String`,
+                    status: 404
                 });
             }
         }
         if (obj.isObject) {
-            if (!(typeof (values) === 'object')) {
+            if ( ! ( typeof ( values ) === 'object' ) ) {
                 errors.push({
-                    key: { key },
-                    location: obj.in,
-                    message: obj.errorMessage || `${key} Should be an object`,
+                    message: `${key} Should be an object`,
+                    status: 404
                 });
             }
         }
@@ -60,44 +56,31 @@ export default (config) => (req: Request, res: Response, next: NextFunction) => 
             const regex = obj.regex;
             if (!regex.test(values[0])) {
                 errors.push({
-                    key: { key },
-                    location: obj.in,
-                    message: obj.errorMessage || `${key} is not valid expression`,
+                    message: `${key} is not valid expression` ,
+                    status: 400,
                 });
             }
         }
-        if (obj.default) {
-            if (isNull(values[0])) {
-                // values[0] === obj.default;
-            }
-        }
         if (obj.number) {
-            if (isNaN(values[0]) || values[0] === undefined) {
+            if (isNaN(values[0]) || values[0] === '' || values[0] === undefined) {
                 errors.push({
-                    key: { key },
-                    location: obj.in,
-                    message: obj.errorMessage || `${key}  must be an number`,
+                    message: `${key}  must be an number` ,
+                    status: 400,
                 });
             }
         }
     });
     if (errors.length > 0) {
-        res.status(400).send({ errors });
+        res.status(400).send({ errors});
     }
     else {
         next();
     }
 };
 
-
-          }
-        }
-    );
-
-    if (errors.length > 0) {
-              res.status(400).json({ errors });
-          }
-          else {
-              next();
-          }
-      };
+function isNull( obj: any ) {
+    // console.log('obj[0',obj[0]);
+    const a = ( obj === 'undefined' || obj === null );
+    // console.log('result' , a);
+    return a;
+  }

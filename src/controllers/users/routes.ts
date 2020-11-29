@@ -5,17 +5,13 @@ import { permissions, user } from '../../libs/routes/Constants';
 import validationHandler from '../../libs/routes/validationHandler';
 import config from './validation';
 const UserRouter = express.Router();
-
 UserRouter.route('/')
-.get( UserController.get)
-.post( UserController.create)
-.put( UserController.update)
-.delete( UserController.delete);
-
+.post(authMiddleWare ( permissions.getUsers, 'all' ), UserController.create)
+.put(authMiddleWare ( permissions.getUsers, 'all' ), UserController.update);
+UserRouter.route('/:id')
+.delete( authMiddleWare ( permissions.getUsers, 'all' ), UserController.remove);
 UserRouter.route('/me')
-.get(authMiddleWare ( permissions.getUsers, 'all' ), UserController.me);
-
+.get(authMiddleWare ( permissions.getUsers, 'all' ), UserController.get);
 UserRouter.route('/login')
-.post( validationHandler ( config.login ) , UserController.login );
-
+.post( validationHandler ( config.login ), UserController.login );
 export default UserRouter;

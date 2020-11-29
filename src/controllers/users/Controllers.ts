@@ -1,8 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { userModel } from '../../repositories/user/UserModel';
-import * as jwt from 'jsonwebtoken';
 import IRequest from '../../IRequest';
+import * as jwt from 'jsonwebtoken';
+import UserRepository from '../../repositories/user/UserRepository';
+import { config } from '../../config';
+import * as bcrypt from 'bcrypt';
+
 class UserController {
+    userRepository: UserRepository = new UserRepository();
     static instance: UserController;
 
     static getInstance() {
@@ -13,118 +18,143 @@ class UserController {
         return UserController.instance;
     }
 
-    get(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside get method of User');
-            res.send({
-                message: 'User fetched succefully',
-                data: [{
-                    name: 'user1',
-
-                },
-                {
-                    name: 'user2',
-                }]
-            });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
-    }
-    create(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside post method of Trainee');
-            res.send({
-                message: 'User created succefully',
-                data: [{
-                    name: 'user1',
-
-                },
-                {
-                    name: 'user2',
-                }]
-            });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
-    }
-    update(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside put method of Trainee');
-            res.send({
-                message: 'Trainee updated succefully',
-                data: [{
-                    name: 'user1',
-
-                },
-                {
-                    name: 'user2',
-                }]
-            });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
-    }
-    delete(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside delete method of Trainee');
-            res.send({
-                message: 'Trainee deleted succefully',
-                data: [{
-                    name: 'user1',
-
-                },
-                {
-                    name: 'user2',
-                }]
-            });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
-    }
-
-    login( req: IRequest, res: Response, next: NextFunction ) {
-        try { const { email , password } = req.body;
-
-        userModel.findOne ( { email: req.body.email }, ( err, result ) => {
-            if ( result ) {
-                if ( password === result.password ) {
-                    console.log ( 'result is' , result.password );
-                    const token = jwt.sign ( {
-                        result
-                    }, 'qwertyuiopasdfghjklzxcvbnm123456' );
-                console.log( token );
+    public async get(req: IRequest, res: Response, next: NextFunction) {
+        const user = new UserRepository();
+        const { id } = req.query;
+        await user.getUser({ id })
+            .then((data) => {
+                if (data === null) {
+                    throw undefined;
+                }
+                console.log(data);
+                res.status(200).send({
+                    message: 'User fetched successfully',
+                    data,
+                    code: 200
+                });
+            })
+            .catch(err => {
+                console.log(err);
                 res.send({
-                    data: token,
-                    message: 'Login Permited',
-                    status: 200
-                } );
-                }
-                else {
-                    res.send ( {
-                        message: 'Password does not Match',
-                        status: 400
-                    } );
-                }
-            }
-            else {
-                        res.send ( {
-                            message: 'Email is not Registered',
-                            status:   404
-                        } );
-            }
-        } ) ;
+                    error: 'User not found',
+                    code: 500
+                });
+            });
     }
-        catch ( err ) {
-            res.send( err );
+
+    public async create(req: IRequest, res: Response, next: NextFunction) {
+
+        console.log(`Inside Post/Create route of User Controller`);
+        const { id, email, name, role, password } = req.body;
+        const creator = req.userData._id;
+        const user = new UserRepository();
+        await user.createUser({ email, name, role, password }, creator)
+            .then(() => {
+                console.log(req.body);
+                res.send({
+                    message: 'User Added/created Successfully',
+                    data: {
+                        'name': name,
+                        'email': email,
+                        'role': role,
+                        'password': password
+                    },
+                    code: 200
+                });
+            });
+    }
+
+    public async update(req: IRequest, res: Response, next: NextFunction) {
+        const { id, dataToUpdate } = req.body;
+        console.log('id', id);
+        console.log('dataToUpdate', dataToUpdate);
+        const updator = req.userData._id;
+        const user = new UserRepository();
+        await user.updateUser(id, dataToUpdate, updator)
+            .then((result) => {
+                res.send({
+                    data: result,
+                    message: 'User updated Successfully',
+                    code: 200
+                });
+            })
+            .catch((err) => {
+                res.send({
+                    error: 'User Not Found for update',
+                    code: 404
+                });
+            });
+    }
+
+    public async remove(req: IRequest, res: Response, next: NextFunction) {
+        const id = req.params.id;
+        const remover = req.userData._id;
+        const user = new UserRepository();
+        await user.deleteData(id, remover)
+            .then((result) => {
+                res.send({
+                    message: 'User deleted Successfully',
+                    code: 200
+                });
+            })
+            .catch((err) => {
+                res.send({
+                    message: 'User not found to be deleted',
+                    code: 404
+                });
+            });
+    }
+
+    public async login(req: IRequest, res: Response, next: NextFunction) {
+        try {
+            const { email } = req.body;
+            const user = new UserRepository();
+            const userData = await user.getUser({ email });
+            if (userData) {
+                const { password } = userData;
+                bcrypt.compare(req.body.password, password, (err, result) => {
+                    console.log(req.body.password);
+                    console.log(password);
+                    if (err) { throw (err); }
+                    if (result) {
+                        const token = jwt.sign(userData.toJSON(), config.KEY, {
+                            expiresIn: '1m',
+                        });
+                        console.log(token);
+                        res.send({
+                            'token': token,
+                            message: 'Login Permited',
+                            status: 200
+                        });
+                    }
+                    else {
+                        res.send({
+                            message: 'Invalid Password',
+                            status: 401
+                        });
+                    }
+                });
+            }
+
+            else {
+                res.send({
+                    message: 'Email is not Registered',
+                    status: 404
+                });
+            }
+        }
+        catch (err) {
+            res.send(err);
         }
     }
 
-    me( req: IRequest, res: Response, next: NextFunction ) {
+    public async me(req: IRequest, res: Response, next: NextFunction) {
         const data = req.userData;
-       res.json( {
+        console.log(data);
+        res.json({
             data
-       } );
+        });
     }
 }
 
-export default UserController.getInstance();
+export default new UserController();
