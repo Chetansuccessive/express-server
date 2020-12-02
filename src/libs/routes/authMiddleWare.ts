@@ -12,8 +12,8 @@ export default (module: any, permissinType: string) => (req: IRequest, res: Resp
         const decodeUser = jwt.verify(token, 'qwertyuiopasdfghjklzxcvbnm123456');
         console.log('User', decodeUser);
         req.userData = decodeUser;
-        console.log(decodeUser.role);
-        const result = hasPermissions(module, decodeUser.role, permissinType);
+        console.log(decodeUser);
+        const result = hasPermissions(module, decodeUser, permissinType);
         if (result === true)
             next();
         else {
