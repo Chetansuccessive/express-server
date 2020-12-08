@@ -85,19 +85,19 @@ class UserController {
 
         const user = new UserRepository();
         await user.getallTrainee(skip, limit, sort)
-        .then((data) => {
-            res.status(200).send({
-                message: 'Trainees fetched successfully',
-                'count': data[1],
-                'data': data
+            .then((data) => {
+                res.status(200).send({
+                    message: 'Trainees fetched successfully',
+                    'count': data[1],
+                    'data': data
+                });
+            })
+            .catch((err) => {
+                res.send({
+                    message: 'Unable to fetch Trainees',
+                    status: 404
+                });
             });
-        })
-        .catch((err) => {
-            res.send({
-                message : 'Unable to fetch Trainees',
-                status : 404
-            });
-        });
     }
 
 
@@ -149,7 +149,7 @@ class UserController {
             const userData = await user.getUser({ email });
             if (userData) {
                 const { password } = userData;
-                bcrypt.compare(req.body.password, password, (err, result) => {
+                bcrypt.compare(req.body.password, password, function fun(err, result) {
                     console.log(req.body.password);
                     console.log(password);
                     if (err) { throw (err); }

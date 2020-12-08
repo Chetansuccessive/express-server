@@ -3,6 +3,9 @@ import * as bodyParser from 'body-parser';
 import { notFoundRoute, errorHandler } from './libs/routes';
 import routes from './router';
 import Database from './libs/Database';
+import * as swaggerUI from 'swagger-ui-express';
+import * as swaggerDocument from 'swagger-jsdoc';
+
 
 class Server {
     app;
@@ -17,8 +20,32 @@ class Server {
         return this;
     }
 
+    initSwagger = () => {
+        const options = {
+            definition: {
+                info: {
+                    title: 'JavaScript-Server API Swagger',
+                    version: '1.0.0',
+                },
+                securityDefinitions: {
+                    Bearer: {
+                        type: 'apiKey',
+                        name: 'Authorization',
+                        in: 'headers'
+                    }
+                }
+            },
+            basePath: '/api',
+            swagger: '4.1',
+            apis: ['./src/controllers/**/routes.ts'],
+        };
+        const swaggerSpec = swaggerDocument(options);
+        return swaggerSpec;
+    }
+
     public setupRoutes() {
         const { app } = this;
+        this.app.use('/swagger', swaggerUI.serve, swaggerUI.setup(this.initSwagger()));
         app.use('/health-check', (req, res, next) => {
             console.log('Inside Second middleware');
             res.send('I am OK');
